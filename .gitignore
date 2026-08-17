@@ -14,4 +14,4 @@ __pycache__/
 
 # pyinstaller output
 dist/
-*.spec
+windows/DragonPal.spec
