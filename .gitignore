@@ -1,0 +1,13 @@
+# build artifacts
+build/
+
+# signing key: never commit this
+keystore.jks
+
+# Android SDK (huge, not source)
+sdk/
+
+# apk signature sidecar + misc
+*.apk.idsig
+__pycache__/
+*.log

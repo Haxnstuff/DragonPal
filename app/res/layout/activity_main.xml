@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dragon Pal"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#88c038"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Your AI dragon that lives on your screen."
+            android:textSize="14sp"
+            android:textColor="#a9a9c0"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="PERSONALITY"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#88c038"/>
+
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Dragon name (Ember)"
+            android:inputType="text"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="MODEL / API"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#88c038"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Pick a provider and everything is filled in for you."
+            android:textSize="13sp"
+            android:textColor="#a9a9c0"/>
+
+        <Spinner
+            android:id="@+id/provider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="API key"
+            android:textSize="13sp"
+            android:textColor="#a9a9c0"/>
+
+        <EditText
+            android:id="@+id/apikey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="sk-..."
+            android:inputType="textPassword"/>
+
+        <CheckBox
+            android:id="@+id/showkey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show keys"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Advanced (already filled in, but you can edit)"
+            android:textSize="12sp"
+            android:textColor="#7c7c94"/>
+
+        <EditText
+            android:id="@+id/baseurl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="API base URL"
+            android:inputType="textUri"/>
+
+        <AutoCompleteTextView
+            android:id="@+id/model"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Chat model"
+            android:inputType="text"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="VISION (screen seeing)"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#88c038"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Optional. Leave on &quot;Same as chat&quot; to reuse the provider above."
+            android:textSize="13sp"
+            android:textColor="#a9a9c0"/>
+
+        <Spinner
+            android:id="@+id/visionprovider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
+
+        <AutoCompleteTextView
+            android:id="@+id/visionmodel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Vision model"
+            android:inputType="text"/>
+
+        <AutoCompleteTextView
+            android:id="@+id/visionbaseurl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Vision base URL"
+            android:inputType="textUri"/>
+
+        <EditText
+            android:id="@+id/visionkey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Vision API key"
+            android:inputType="textPassword"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_test"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Test connection"/>
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Save"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="13sp"
+            android:textColor="#f5d76e"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="PERMISSIONS"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#88c038"/>
+
+        <Button
+            android:id="@+id/btn_start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Start dragon overlay"/>
+
+        <CheckBox
+            android:id="@+id/roaming"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Roam around the screen (wander)"/>
+
+        <Button
+            android:id="@+id/btn_screen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable screen viewing"/>
+
+        <Button
+            android:id="@+id/btn_access"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable text helper (accessibility)"/>
+
+        <Button
+            android:id="@+id/btn_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Talk to your dragon"/>
+
+        <Button
+            android:id="@+id/btn_reset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reset dragon memory"
+            android:textColor="#ff8a8a"/>
+    </LinearLayout>
+</ScrollView>

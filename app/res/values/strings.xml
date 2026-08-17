@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Dragon Pal</string>
+    <string name="accessibility_label">Dragon Pal: reacts to text you highlight</string>
+</resources>
