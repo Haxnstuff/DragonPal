@@ -2,10 +2,11 @@
 
 A little AI dragon that lives on your screen. I'm Haxnstuff, and I built this because I wanted a companion that feels alive instead of a chatbot you have to open an app to talk to. It floats over whatever you're doing, talks out loud, remembers stuff, and gets adorably grumpy if you talk about slaying dragons.
 
-There are two versions:
+There are three versions:
 
 - **Android**: the floating dragon app. Source in `app/`, ready-to-install build in `DragonPal.apk`.
 - **Windows**: the desktop dragon. Source in `windows/`.
+- **Linux**: the desktop dragon, packaged for the main distros. Source in `windows/`, package files in `linux/`.
 
 ## What it can do
 
@@ -76,9 +77,9 @@ cd windows
 pip install -r requirements.txt
 ```
 
-The two dependencies are optional. Without them the app still runs, but:
+The dependencies are optional. Without them the app still runs, but:
 
-- no `pillow`: the dragon can't look at your screen
+- no `pillow` or `mss`: the dragon can't look at your screen
 - no `pyttsx3`: the dragon won't speak out loud
 
 ### Run
@@ -123,6 +124,50 @@ windows\build_exe.bat
 ```
 
 That drops `windows\dist\DragonPal.exe`.
+
+## Linux
+
+The Linux version is the same Python app, packaged for the main distros. Every push to master builds them on GitHub Actions and attaches them to the latest release.
+
+Packages:
+
+- Debian / Ubuntu: `dragonpal_1.0.0_all.deb`
+- Fedora / RHEL: `dragonpal-1.0.0-1.noarch.rpm`
+- Arch: `dragonpal-1.0.0-1-any.pkg.tar.zst` (plus a PKGBUILD in `linux/`)
+- Universal: `DragonPal-linux-x86_64.tar.gz` (a single binary, no Python needed)
+
+### Install
+
+Debian / Ubuntu:
+
+```bash
+sudo apt install ./dragonpal_1.0.0_all.deb
+```
+
+Fedora:
+
+```bash
+sudo dnf install ./dragonpal-1.0.0-1.noarch.rpm
+```
+
+Arch:
+
+```bash
+sudo pacman -U ./dragonpal-1.0.0-1-any.pkg.tar.zst
+```
+
+Universal binary: untar it and run `./DragonPal`. It needs Tk 8.6 and X11, which ship with any desktop distro.
+
+### Run
+
+After installing any of the packages, launch it from your app menu (it's called Dragon Pal), or run `dragonpal` in a terminal. Setup is the same as Windows: pick a provider, paste your API key, hit Start Dragon.
+
+### Linux notes
+
+- The packages need Python 3 and Tkinter, which they declare as dependencies.
+- Screen viewing needs `pillow` and `mss` (`pip install pillow mss`) and an X11 session. On Wayland, desktop screen capture is usually blocked by the compositor, so the eye button may not work there.
+- Speech needs `pyttsx3` (`pip install pyttsx3`) plus `espeak` on your system.
+- The shared Python source lives in `windows/dragonpal/` and is reused by every build.
 
 ## Notes
 

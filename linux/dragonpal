@@ -1,0 +1,4 @@
+#!/bin/sh
+# DragonPal launcher. The app is installed under /opt/dragonpal.
+cd /opt/dragonpal || exit 1
+exec python3 -m dragonpal.app "$@"

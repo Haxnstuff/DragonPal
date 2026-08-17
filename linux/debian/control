@@ -1,0 +1,14 @@
+Package: dragonpal
+Version: 1.0.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends: python3, python3-tk
+Recommends: python3-pil
+Suggests: espeak
+Maintainer: Haxnstuff <jlukasgammon@gmail.com>
+Description: A little AI dragon that lives on your screen
+ DragonPal is a floating desktop AI companion. It roams your screen, talks
+ out loud, remembers you, reacts to text you copy, and can look at your
+ screen with a vision model. This package installs the Python source plus a
+ launcher and desktop entry.

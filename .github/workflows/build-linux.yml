@@ -1,0 +1,171 @@
+name: Build Linux packages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - 'windows/**'
+      - 'linux/**'
+      - '.github/workflows/build-linux.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run logic tests
+        run: python3 windows/tests/test_logic.py
+
+  deb:
+    needs: test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y python3-tk xvfb
+      - name: Smoke test GUI (headless)
+        run: |
+          cd windows
+          xvfb-run -a timeout 25 python3 -c "import dragonpal.app as a; app=a.DragonPal(); app.root.after(2500, app.root.destroy); app.root.mainloop(); print('GUI OK')"
+      - name: Stage and build deb
+        run: |
+          set -e
+          STAGE="$RUNNER_TEMP/stage"
+          rm -rf "$STAGE"; mkdir -p "$STAGE/DEBIAN" "$STAGE/opt/dragonpal" "$STAGE/usr/bin" "$STAGE/usr/share/applications" "$STAGE/usr/share/icons/hicolor/256x256/apps"
+          cp -r windows/dragonpal "$STAGE/opt/dragonpal/"
+          cp linux/debian/control "$STAGE/DEBIAN/control"
+          cp linux/dragonpal "$STAGE/usr/bin/dragonpal"; chmod 755 "$STAGE/usr/bin/dragonpal"
+          cp linux/DragonPal.desktop "$STAGE/usr/share/applications/"
+          cp linux/dragonpal.png "$STAGE/usr/share/icons/hicolor/256x256/apps/"
+          dpkg-deb --build "$STAGE" dragonpal_1.0.0_all.deb
+          dpkg-deb --info dragonpal_1.0.0_all.deb
+          dpkg-deb --contents dragonpal_1.0.0_all.deb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DragonPal-deb
+          path: dragonpal_1.0.0_all.deb
+          if-no-files-found: error
+
+  rpm:
+    needs: test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y rpm python3-tk xvfb
+      - name: Smoke test GUI (headless)
+        run: |
+          cd windows
+          xvfb-run -a timeout 25 python3 -c "import dragonpal.app as a; app=a.DragonPal(); app.root.after(2500, app.root.destroy); app.root.mainloop(); print('GUI OK')"
+      - name: Stage and build rpm
+        run: |
+          set -e
+          TOP="$HOME/rpmbuild"
+          mkdir -p "$TOP"/BUILD "$TOP"/RPMS "$TOP"/SOURCES "$TOP"/SPECS "$TOP"/SRPMS
+          STAGE="$RUNNER_TEMP/stage/dragonpal-1.0.0"
+          rm -rf "$RUNNER_TEMP/stage"; mkdir -p "$STAGE"
+          cp -r windows/dragonpal "$STAGE/"
+          cp linux/dragonpal "$STAGE/dragonpal-launcher"
+          cp linux/DragonPal.desktop "$STAGE/"
+          cp linux/dragonpal.png "$STAGE/"
+          tar czf "$TOP/SOURCES/dragonpal-1.0.0.tar.gz" -C "$RUNNER_TEMP/stage" dragonpal-1.0.0
+          cp linux/dragonpal.spec "$TOP/SPECS/"
+          rpmbuild -bb --define "_topdir $TOP" "$TOP/SPECS/dragonpal.spec"
+          cp "$TOP"/RPMS/noarch/*.rpm .
+          ls -la *.rpm
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DragonPal-rpm
+          path: '*.rpm'
+          if-no-files-found: error
+
+  arch:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install toolchain
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+          pacman -Sy --noconfirm archlinux-keyring
+          pacman -S --noconfirm base-devel git python tk
+          useradd -m builder
+          echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+      - uses: actions/checkout@v4
+      - name: Run logic tests
+        run: python3 windows/tests/test_logic.py
+      - name: Build package
+        run: |
+          set -e
+          STAGE="$RUNNER_TEMP/stage/dragonpal-1.0.0"
+          rm -rf "$RUNNER_TEMP/stage"; mkdir -p "$STAGE"
+          cp -r windows/dragonpal "$STAGE/"
+          cp linux/dragonpal "$STAGE/dragonpal-launcher"
+          cp linux/DragonPal.desktop "$STAGE/"
+          cp linux/dragonpal.png "$STAGE/"
+          tar czf dragonpal-1.0.0.tar.gz -C "$RUNNER_TEMP/stage" dragonpal-1.0.0
+          BUILD="$RUNNER_TEMP/build"
+          rm -rf "$BUILD"; mkdir -p "$BUILD"
+          cp linux/PKGBUILD "$BUILD/"
+          cp dragonpal-1.0.0.tar.gz "$BUILD/"
+          chown -R builder:builder "$BUILD"
+          su builder -c "cd '$BUILD' && makepkg -f --noconfirm"
+          cp "$BUILD"/*.pkg.tar.zst .
+          ls -la *.pkg.tar.zst
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DragonPal-arch
+          path: '*.pkg.tar.zst'
+          if-no-files-found: error
+
+  universal:
+    needs: test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk xvfb espeak
+          python -m pip install --upgrade pip
+          python -m pip install -r windows/requirements.txt pyinstaller
+      - name: Build binary
+        run: |
+          cd windows
+          python -m PyInstaller --noconfirm --clean --onefile --name DragonPal \
+            --collect-all pyttsx3 --collect-all pillow --collect-all mss run.py
+      - name: Smoke test binary (headless)
+        run: |
+          cd windows
+          set +e
+          xvfb-run -a timeout 25 ./dist/DragonPal
+          code=$?
+          if [ "$code" = "124" ]; then
+            echo "binary ran until timeout as expected"
+          else
+            echo "binary exited early with code $code"
+            exit 1
+          fi
+      - name: Package tarball
+        run: |
+          cd windows/dist
+          tar czf DragonPal-linux-x86_64.tar.gz DragonPal
+          ls -la
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DragonPal-linux-universal
+          path: windows/dist/DragonPal-linux-x86_64.tar.gz
+          if-no-files-found: error

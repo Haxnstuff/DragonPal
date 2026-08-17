@@ -1,5 +1,6 @@
-# Optional extras. The app runs without them, but two features are disabled:
-#   Pillow  -> the dragon can't look at your screen
-#   pyttsx3 -> the dragon won't speak out loud
+# Optional extras. The app runs without them, but a couple features are disabled:
+#   pillow + mss -> the dragon can't look at your screen
+#   pyttsx3      -> the dragon won't speak out loud
 pillow
+mss
 pyttsx3

@@ -1,0 +1,21 @@
+# Maintainer: Haxnstuff <jlukasgammon@gmail.com>
+pkgname=dragonpal
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="A little AI dragon that lives on your screen"
+arch=('any')
+url="https://github.com/Haxnstuff/DragonPal"
+license=('custom')
+depends=('python' 'tk')
+optdepends=('python-pillow: screen viewing' 'espeak: text to speech')
+source=("dragonpal-${pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+  cd "${srcdir}/dragonpal-${pkgver}"
+  install -dm755 "${pkgdir}/opt/dragonpal"
+  cp -r dragonpal "${pkgdir}/opt/dragonpal/"
+  install -Dm755 dragonpal-launcher "${pkgdir}/usr/bin/dragonpal"
+  install -Dm644 DragonPal.desktop "${pkgdir}/usr/share/applications/DragonPal.desktop"
+  install -Dm644 dragonpal.png "${pkgdir}/usr/share/icons/hicolor/256x256/apps/dragonpal.png"
+}

@@ -20,11 +20,6 @@ import dragonpal.memory as memory
 import dragonpal.persona as persona
 
 try:
-    from PIL import ImageGrab
-except Exception:
-    ImageGrab = None
-
-try:
     import pyttsx3
 except Exception:
     pyttsx3 = None
@@ -35,6 +30,48 @@ GREEN = "#3fb950"
 GREEN_DARK = "#1f7a33"
 WING = "#8be09b"
 BUBBLE_BG = "#eafaf1"
+
+
+def _grab_screen():
+    """Return a PIL Image of the whole screen, or None if nothing works.
+
+    Tries mss first (cross-platform), then Pillow ImageGrab (Windows/macOS),
+    then a Linux subprocess fallback (ImageMagick import or scrot).
+    """
+    try:
+        import mss
+        with mss.mss() as sct:
+            monitor = sct.monitors[0]
+            shot = sct.grab(monitor)
+            from PIL import Image
+            return Image.frombytes("RGB", shot.size, shot.rgb)
+    except Exception:
+        pass
+    try:
+        from PIL import ImageGrab
+        img = ImageGrab.grab()
+        if img is not None:
+            return img
+    except Exception:
+        pass
+    try:
+        import os
+        import subprocess
+        import tempfile
+        from PIL import Image
+        path = tempfile.mktemp(suffix=".png")
+        for cmd in (["import", "-window", "root", path], ["scrot", path]):
+            r = subprocess.run(cmd, capture_output=True, timeout=10)
+            if r.returncode == 0 and os.path.exists(path):
+                img = Image.open(path)
+                img.load()
+                os.remove(path)
+                return img
+        if os.path.exists(path):
+            os.remove(path)
+    except Exception:
+        pass
+    return None
 
 
 class DragonPal:
@@ -240,9 +277,6 @@ class DragonPal:
     # ---------- vision ----------
 
     def look_at_screen(self):
-        if ImageGrab is None:
-            self.post_to_dragon("Screen viewing needs Pillow. Run: pip install pillow")
-            return
         base = self.mem.effective_vision_base_url()
         if "deepseek" in base:
             self.post_to_dragon("DeepSeek's hosted API doesn't accept images. Switch to a vision provider like OpenAI, Gemini, or Groq.")
@@ -255,7 +289,10 @@ class DragonPal:
 
     def _do_vision(self):
         try:
-            img = ImageGrab.grab()
+            img = _grab_screen()
+            if img is None:
+                self.post_to_dragon("Couldn't grab the screen. Screen viewing needs pillow and mss (pip install pillow mss), and an X11 session on Linux.")
+                return
             max_w = 1280
             if img.width > max_w:
                 img = img.resize((max_w, int(img.height * max_w / img.width)))

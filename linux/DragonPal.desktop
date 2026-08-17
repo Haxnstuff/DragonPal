@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Dragon Pal
+Comment=A little AI dragon that lives on your screen
+Exec=/usr/bin/dragonpal
+Icon=dragonpal
+Terminal=false
+Categories=Utility;
