@@ -1,6 +1,6 @@
 # DragonPal
 
-A little AI dragon that lives on your screen. I'm Haxnstuff, and I built this because I wanted a companion that feels alive instead of a chatbot you have to open an app to talk to. It floats over whatever you're doing, talks out loud, remembers stuff, and gets adorably grumpy if you talk about slaying dragons.
+A little AI dragon that lives on your screen.
 
 There are three versions:
 
