@@ -11,3 +11,7 @@ sdk/
 *.apk.idsig
 __pycache__/
 *.log
+
+# pyinstaller output
+dist/
+*.spec

@@ -112,6 +112,18 @@ cd windows
 python tests/test_logic.py
 ```
 
+### Standalone exe
+
+You don't need Python to get the exe. Every push to master builds one on GitHub's Windows runners. Grab it from the latest Actions run (Actions tab, pick the run, then Artifacts, then DragonPal-windows).
+
+Or build it yourself on a Windows machine:
+
+```bat
+windows\build_exe.bat
+```
+
+That drops `windows\dist\DragonPal.exe`.
+
 ## Notes
 
 - Your API key never leaves your machine. It's stored locally, and the app talks straight to whatever provider you picked.
