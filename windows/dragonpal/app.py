@@ -136,6 +136,14 @@ class DragonPal:
         parent._r += 1
         return entry
 
+    def _combo_row(self, parent, label):
+        ttk.Label(parent, text=label, width=16, anchor="e").grid(row=parent._r, column=0, sticky="e", padx=(6, 4), pady=3)
+        cb = ttk.Combobox(parent)
+        cb.grid(row=parent._r, column=1, sticky="we", padx=(0, 6), pady=3)
+        parent.columnconfigure(1, weight=1)
+        parent._r += 1
+        return cb
+
     def _build_settings(self):
         f = ttk.Frame(self.root, padding=8)
         f.pack(fill="both", expand=True)
@@ -151,8 +159,9 @@ class DragonPal:
         self.baseurl = self._row(f, "Base URL")
         self.apikey = self._row(f, "API key")
         self.apikey.configure(show="*")
-        self.model = self._row(f, "Model")
-        self.visionmodel = self._row(f, "Vision model")
+        self.model = self._combo_row(f, "Model")
+        self.visionmodel = self._combo_row(f, "Vision model")
+        self.visionmodel.configure(values=catalog.VISION_MODELS)
         self.visionbaseurl = self._row(f, "Vision URL")
         self.visionkey = self._row(f, "Vision key")
         self.visionkey.configure(show="*")
@@ -164,8 +173,8 @@ class DragonPal:
         # load current state
         self.name.insert(0, self.mem.dragon_name())
         self.baseurl.insert(0, self.mem.base_url())
-        self.model.insert(0, self.mem.model())
-        self.visionmodel.insert(0, self.mem.vision_model())
+        self.model.set(self.mem.model())
+        self.visionmodel.set(self.mem.vision_model())
         self.visionbaseurl.insert(0, self.mem.vision_base_url())
         self.visionkey.insert(0, self.mem.vision_api_key())
         self.roaming.set(self.mem.roaming())
@@ -206,10 +215,8 @@ class DragonPal:
         p = catalog.preset(pos)
         self.baseurl.delete(0, "end")
         self.baseurl.insert(0, p.base_url)
-        self.model.delete(0, "end")
-        self.model.insert(0, p.default_chat)
-        self.visionmodel.delete(0, "end")
-        self.visionmodel.insert(0, p.default_vision)
+        self.model.set(p.default_chat)
+        self.visionmodel.set(p.default_vision)
         self.apikey.delete(0, "end")
         self.apikey.insert(0, self.mem.api_key_for(pos))
 
